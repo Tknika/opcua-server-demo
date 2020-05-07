@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import logging
 import asyncio
+import logging
+import os
 
 from asyncua import ua, Server
 
@@ -69,6 +70,11 @@ async def cyclic_data(data, cycle_time=1, step=0.1, init=0, min=0, max=100):
 
 
 async def main():
+    # Certificates folder
+    certs_folder = os.environ.get('CERTS_FOLDER', os.path.dirname(os.path.realpath(__file__)))
+    key_pem_path = os.path.join(certs_folder, "key.pem")
+    cert_der_path = os.path.join(certs_folder, "certificate.der")
+
     server = Server()
     await server.init()
     await server.set_application_uri("urn:opcua:iom:server")
@@ -76,8 +82,8 @@ async def main():
     server.set_server_name("IoM PLC Server Example")
 
     # Security
-    await server.load_certificate("certificate.der")
-    await server.load_private_key("key.pem")
+    await server.load_certificate(cert_der_path)
+    await server.load_private_key(key_pem_path)
     server.set_security_policy([
                 ua.SecurityPolicyType.NoSecurity,
                 ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt])
