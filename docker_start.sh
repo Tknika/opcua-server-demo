@@ -1,4 +1,4 @@
 #!/bin/bash
 
-/certificates/generate_certificate.sh
+/app/generate_certificate.sh /certificates
 /app/main.py
