@@ -1,5 +1,7 @@
 # OPC UA Server Demo
 
+## Introduction
+
 OPC UA Server written with [opcua-asyncio](https://github.com/FreeOpcUa/opcua-asyncio) that exposes some nodes for demonstration purposes.
 
 - **BooleanData**: boolean variable that flips its state every 2 seconds.
@@ -9,9 +11,15 @@ OPC UA Server written with [opcua-asyncio](https://github.com/FreeOpcUa/opcua-as
 - **CyclicData**: numeric (Int64) value that goes from -100 to 100 (and vice versa) every 10 seconds, with a 0.2 step size.
 - **MirrorData***: a couple of boolean values (MirrorDataOriginal and MirrorDataCopy) where MirrorDataCopy mimics the MirrorDataOriginal value. Only the second one is writable.
 
+## Security
+
 The server supports two security policies:
 
 - None (no encryption)
 - Basic256Sha256
 
 > Please, ensure that valid ```certificate.der``` and ```key.pem``` files are available in the ```main.py``` python file folder before starting the server. Both files can be created using the ```generate_certificate.sh``` script.
+
+## Docker
+
+Docker images for this application are available at: https://hub.docker.com/r/bodiroga/opcua-server-demo
