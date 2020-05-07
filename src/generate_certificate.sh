@@ -3,10 +3,17 @@
 SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_FOLDER=$(dirname "$SCRIPT_PATH")
 
-KEY_FILE_PATH="$SCRIPT_FOLDER/key.pem"
+if [[ $1 ]]; then
+    CERTS_FOLDER=$1
+else
+    CERTS_FOLDER=$SCRIPT_FOLDER
+fi
+
 SSL_FILE_PATH="$SCRIPT_FOLDER/ssl.conf"
-CERTIFICATE_PEM_FILE_PATH="$SCRIPT_FOLDER/certificate.pem"
-CERTIFICATE_DER_FILE_PATH="$SCRIPT_FOLDER/certificate.der"
+
+KEY_FILE_PATH="$CERTS_FOLDER/key.pem"
+CERTIFICATE_PEM_FILE_PATH="$CERTS_FOLDER/certificate.pem"
+CERTIFICATE_DER_FILE_PATH="$CERTS_FOLDER/certificate.der"
 
 if [ -f $KEY_FILE_PATH ]; then
     echo "$KEY_FILE_PATH file already exists!"
