@@ -5,6 +5,7 @@ import logging
 import os
 
 from asyncua import ua, Server
+from tcx_handler import TCXHandler
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(name)-20s  - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +26,32 @@ class MirrorHandler(object):
 
     def datachange_notification(self, node, val, data):
         if self.orig_data == node:
+            if not isinstance(val, bool):
+                logger.error("Node value is not boolean")
+                return
             self.server.set_attribute_value(self.copy_data.nodeid, ua.DataValue(val))
+
+
+class TCXUpdateHandler(object):
+
+    def __init__(self, filepath, lat_data, long_data, lat_long_data):
+        self.filepath = filepath
+        self.lat_data = lat_data
+        self.long_data = long_data
+        self.lat_long_data = lat_long_data
+        self.tcx = TCXHandler(filepath)
+
+    async def on_update(self, position):
+        lat = position.get("latitude")
+        long = position.get("longitude")
+        lat_long = "lat={},long={}".format(lat, long)
+        if lat: await self.lat_data.write_value(lat)
+        if long: await self.long_data.write_value(long)
+        if long and lat: await self.lat_long_data.write_value(lat_long)
+
+    async def start(self):
+        self.tcx.register_callback(self.on_update)
+        await self.tcx.start()
 
 
 async def toggle_data(data, refresh=1, init=False):
@@ -94,6 +120,7 @@ async def main():
     objects = server.get_objects_node()
     # populating our address space
     plc_server = await objects.add_object(idx, 'PLC Server')
+
     bool_data = await plc_server.add_variable(idx, 'BooleanData', True)
     pos_data = await plc_server.add_variable(idx, 'PositiveTrendData', 0.0)
     neg_data = await plc_server.add_variable(idx, 'NegativeTrendData', 0.0)
@@ -101,6 +128,9 @@ async def main():
     cyc_data = await plc_server.add_variable(idx, 'CyclicData', 0)
     mirror_orig_data = await plc_server.add_variable(idx, 'MirrorDataOriginal', True)
     mirror_copy_data = await plc_server.add_variable(idx, 'MirrorDataCopy', True)
+    latitude_data = await plc_server.add_variable(idx, "GPSLatitude", "")
+    longitude_data = await plc_server.add_variable(idx, "GPSLongitude", "")
+    latitude_longitude_data = await plc_server.add_variable(idx, "GPSLatitudeAndLongitude", "")
 
     logger.info('Starting OPC UA server!')
 
@@ -110,11 +140,14 @@ async def main():
     temp_task = asyncio.Task(random_data(temp_data, refresh=1, init=18.5, min=15, max=22))
     cyclic_task = asyncio.Task(cyclic_data(cyc_data, cycle_time=10, step=0.2, init=0, min=-100, max=100))
     
-    mirrorHandler = MirrorHandler(server, mirror_orig_data, mirror_copy_data)
-    await mirrorHandler.start()
+    mirror_handler = MirrorHandler(server, mirror_orig_data, mirror_copy_data)
+    await mirror_handler.start()
+
+    tcx_update_handler = TCXUpdateHandler("circular-urnieta-aia-donosti-urnieta.tcx", latitude_data, longitude_data, latitude_longitude_data)
+    tcx_task = asyncio.Task(tcx_update_handler.start())
 
     async with server:
-        await asyncio.gather(bool_task, pos_task, neg_task, temp_task, cyclic_task)
+        await asyncio.gather(bool_task, pos_task, neg_task, temp_task, cyclic_task, tcx_task)
 
 
 if __name__ == '__main__':
