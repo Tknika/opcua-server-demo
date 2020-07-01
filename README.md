@@ -9,7 +9,8 @@ OPC UA Server written with [opcua-asyncio](https://github.com/FreeOpcUa/opcua-as
 - **NegativeTrendData**: numeric (double) value that decreases two units every second.
 - **TemperatureData**: numeric (double) value that randomly jumps between 15 and 22 every second.
 - **CyclicData**: numeric (Int64) value that goes from -100 to 100 (and vice versa) every 10 seconds, with a 0.2 step size.
-- **MirrorData***: a couple of boolean values (MirrorDataOriginal and MirrorDataCopy) where MirrorDataCopy mimics the MirrorDataOriginal value. Only the second one is writable.
+- **MirrorData**: a couple of boolean values (MirrorDataOriginal and MirrorDataCopy) where MirrorDataCopy mimics the MirrorDataOriginal value. Only the second one is writable.
+- **GPSLatitude**, **GPSLongitude** and **GPSLatitudeAndLongitude**: GPS coordinate values that reproduce a circular route.
 
 ## Security
 
