@@ -1,1 +1,1 @@
-asyncua
+asyncua==0.8.3

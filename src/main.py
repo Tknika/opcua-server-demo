@@ -24,12 +24,12 @@ class MirrorHandler(object):
         await self.orig_data.set_writable()
         await self.sub.subscribe_data_change(self.orig_data)
 
-    def datachange_notification(self, node, val, data):
+    async def datachange_notification(self, node, val, data):
         if self.orig_data == node:
             if not isinstance(val, bool):
                 logger.error("Node value is not boolean")
                 return
-            self.server.set_attribute_value(self.copy_data.nodeid, ua.DataValue(val))
+            await self.server.write_attribute_value(self.copy_data.nodeid, ua.DataValue(val))
 
 
 class TCXUpdateHandler(object):
