@@ -125,6 +125,7 @@ async def main():
     pos_data = await plc_server.add_variable(idx, 'PositiveTrendData', 0.0)
     neg_data = await plc_server.add_variable(idx, 'NegativeTrendData', 0.0)
     temp_data = await plc_server.add_variable(idx, 'TemperatureData', 18.5)
+    hum_data = await plc_server.add_variable(idx, 'HumidityData', 60.2)
     cyc_data = await plc_server.add_variable(idx, 'CyclicData', 0)
     mirror_orig_data = await plc_server.add_variable(idx, 'MirrorDataOriginal', True)
     mirror_copy_data = await plc_server.add_variable(idx, 'MirrorDataCopy', True)
@@ -138,6 +139,7 @@ async def main():
     pos_task = asyncio.Task(periodic_data(pos_data, refresh=0.2))
     neg_task = asyncio.Task(periodic_data(neg_data, increment=-2))
     temp_task = asyncio.Task(random_data(temp_data, refresh=1, init=18.5, min=15, max=22))
+    hum_task = asyncio.Task(random_data(hum_data, refresh=5, init=60.2, min=0, max=100))
     cyclic_task = asyncio.Task(cyclic_data(cyc_data, cycle_time=10, step=0.2, init=0, min=-100, max=100))
     
     mirror_handler = MirrorHandler(server, mirror_orig_data, mirror_copy_data)
@@ -147,7 +149,7 @@ async def main():
     tcx_task = asyncio.Task(tcx_update_handler.start())
 
     async with server:
-        await asyncio.gather(bool_task, pos_task, neg_task, temp_task, cyclic_task, tcx_task)
+        await asyncio.gather(bool_task, pos_task, neg_task, temp_task, hum_task, cyclic_task, tcx_task)
 
 
 if __name__ == '__main__':
