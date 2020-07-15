@@ -20,7 +20,7 @@ class MirrorHandler(object):
         self.sub = None
 
     async def start(self):
-        self.sub = await self.server.create_subscription(100, self)
+        self.sub = await self.server.create_subscription(500, self)
         await self.orig_data.set_writable()
         await self.sub.subscribe_data_change(self.orig_data)
 
@@ -135,12 +135,12 @@ async def main():
 
     logger.info('Starting OPC UA server!')
 
-    bool_task = asyncio.Task(toggle_data(bool_data, refresh=2, init=True))
-    pos_task = asyncio.Task(periodic_data(pos_data, refresh=0.2))
-    neg_task = asyncio.Task(periodic_data(neg_data, increment=-2))
-    temp_task = asyncio.Task(random_data(temp_data, refresh=1, init=18.5, min=15, max=22))
-    hum_task = asyncio.Task(random_data(hum_data, refresh=5, init=60.2, min=0, max=100))
-    cyclic_task = asyncio.Task(cyclic_data(cyc_data, cycle_time=10, step=0.2, init=0, min=-100, max=100))
+    bool_task = asyncio.Task(toggle_data(bool_data, refresh=10, init=True))
+    pos_task = asyncio.Task(periodic_data(pos_data, refresh=5))
+    neg_task = asyncio.Task(periodic_data(neg_data, refresh=5, increment=-2))
+    temp_task = asyncio.Task(random_data(temp_data, refresh=10, init=18.5, min=15, max=22))
+    hum_task = asyncio.Task(random_data(hum_data, refresh=10, init=60.2, min=0, max=100))
+    cyclic_task = asyncio.Task(cyclic_data(cyc_data, cycle_time=200, step=0.5, init=0, min=-100, max=100))
     
     mirror_handler = MirrorHandler(server, mirror_orig_data, mirror_copy_data)
     await mirror_handler.start()
