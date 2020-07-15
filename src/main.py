@@ -121,17 +121,17 @@ async def main():
     # populating our address space
     plc_server = await objects.add_object(idx, 'PLC Server')
 
-    bool_data = await plc_server.add_variable(idx, 'BooleanData', True)
-    pos_data = await plc_server.add_variable(idx, 'PositiveTrendData', 0.0)
-    neg_data = await plc_server.add_variable(idx, 'NegativeTrendData', 0.0)
-    temp_data = await plc_server.add_variable(idx, 'TemperatureData', 18.5)
-    hum_data = await plc_server.add_variable(idx, 'HumidityData', 60.2)
-    cyc_data = await plc_server.add_variable(idx, 'CyclicData', 0)
-    mirror_orig_data = await plc_server.add_variable(idx, 'MirrorDataOriginal', True)
-    mirror_copy_data = await plc_server.add_variable(idx, 'MirrorDataCopy', True)
-    latitude_data = await plc_server.add_variable(idx, "GPSLatitude", "")
-    longitude_data = await plc_server.add_variable(idx, "GPSLongitude", "")
-    latitude_longitude_data = await plc_server.add_variable(idx, "GPSLatitudeAndLongitude", "")
+    bool_data = await plc_server.add_variable(idx, 'BooleanData', True, datatype=ua.NodeId(1, 0))
+    pos_data = await plc_server.add_variable(idx, 'PositiveTrendData', 0, datatype=ua.NodeId(11, 0))
+    neg_data = await plc_server.add_variable(idx, 'NegativeTrendData', 0, datatype=ua.NodeId(11, 0))
+    temp_data = await plc_server.add_variable(idx, 'TemperatureData', 18.5, datatype=ua.NodeId(11, 0))
+    hum_data = await plc_server.add_variable(idx, 'HumidityData', 60.2, datatype=ua.NodeId(11, 0))
+    cyc_data = await plc_server.add_variable(idx, 'CyclicData', 0, datatype=ua.NodeId(11, 0))
+    mirror_orig_data = await plc_server.add_variable(idx, 'MirrorDataOriginal', True, datatype=ua.NodeId(1, 0))
+    mirror_copy_data = await plc_server.add_variable(idx, 'MirrorDataCopy', True, datatype=ua.NodeId(1, 0))
+    latitude_data = await plc_server.add_variable(idx, "GPSLatitude", "", datatype=ua.NodeId(12, 0))
+    longitude_data = await plc_server.add_variable(idx, "GPSLongitude", "", datatype=ua.NodeId(12, 0))
+    latitude_longitude_data = await plc_server.add_variable(idx, "GPSLatitudeAndLongitude", "", datatype=ua.NodeId(12, 0))
 
     logger.info('Starting OPC UA server!')
 
